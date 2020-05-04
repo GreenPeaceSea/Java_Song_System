@@ -486,6 +486,7 @@ public class Main_Window extends javax.swing.JFrame {
         
     }//GEN-LAST:event_song_TableMouseClicked
 
+//set picture in the label
     public void setPicture()
     {
         try {
