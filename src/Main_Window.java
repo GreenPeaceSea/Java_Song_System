@@ -9,9 +9,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +48,7 @@ public class Main_Window extends javax.swing.JFrame {
     public Connection get_Connection(){
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/song_db_1", "root", "");           
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3325/song_db_1", "root", "");           
             
             return connection;
         } catch (SQLException ex) {
@@ -303,7 +305,11 @@ public class Main_Window extends javax.swing.JFrame {
         name_field.setText("");
         timing_field.setText("");
         singer_field.setText("");
-        id_field.setText("");
+        id_field.setText("");                        
+        
+        Calendar currentDay= Calendar.getInstance();
+        int currYear= currentDay.get(Calendar.YEAR);
+        dateChooser_Year.setValue(currYear);
     }//GEN-LAST:event_clear_all_btnActionPerformed
 
     private void insert_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insert_btnActionPerformed
@@ -475,8 +481,32 @@ public class Main_Window extends javax.swing.JFrame {
         
         
         genre_field1.setText(DfTblMl_1.getValueAt(selectedLine, 5).toString());
+        
+        setPicture();
+        
     }//GEN-LAST:event_song_TableMouseClicked
 
+    public void setPicture()
+    {
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3325/song_db_1", "root","");
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM songs WHERE id='"+id_field.getText()+"'");
+            if(rs.next())
+            {
+                byte[] img = rs.getBytes("image");
+                ImageIcon image = new ImageIcon(img); 
+                Image im = image.getImage();
+                Image myImg = im.getScaledInstance(label_image.getWidth(), label_image.getHeight(), Image.SCALE_SMOOTH);
+                ImageIcon newImage = new ImageIcon(myImg);
+                label_image.setIcon(newImage);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Main_Window.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     //Resize Image
     public ImageIcon ResizeTheImage(String Image_Directory, byte[] picture){
         ImageIcon myImage = null;
